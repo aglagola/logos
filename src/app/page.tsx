@@ -101,9 +101,9 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-[48px] sm:text-[72px] lg:text-[88px] font-sans font-light tracking-tight leading-[1.05]"
           >
-            Reason,
+            Logic Engine
             <br />
-            <span className="font-serif italic text-gradient-gold">deconstructed.</span>
+            <span className="font-serif italic text-gradient-gold">&amp; Axioms AI.</span>
           </motion.h1>
 
           <motion.p
