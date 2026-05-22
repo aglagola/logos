@@ -6,22 +6,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { type Message, type TurnScores, type Fallacy, DEBATE_MODES, type DebateMode, type AIDifficulty, type DebateSide, FALLACY_LABELS } from "@/types";
-import { Send, AlertTriangle, Brain, Zap, Star, RotateCcw, ChevronDown } from "lucide-react";
+import { Send, AlertTriangle, Brain, Zap, Clock, ShieldAlert, Sparkles } from "lucide-react";
 
 function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-[11px] text-stone-ghost uppercase tracking-wide">{label}</span>
-        <span className="text-[12px] font-semibold" style={{ color }}>{value}</span>
+    <div className="space-y-1.5">
+      <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-stone-muted">
+        <span>{label}</span>
+        <span className="font-semibold text-stone">{value}%</span>
       </div>
-      <div className="h-1 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-[rgba(255,255,255,0.03)] rounded-full overflow-hidden border border-[rgba(255,255,255,0.02)]">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="h-full rounded-full"
-          style={{ background: color }}
+          style={{ background: `linear-gradient(90deg, ${color} 0%, ${color}CC 100%)` }}
         />
       </div>
     </div>
@@ -132,109 +132,168 @@ function DebateSessionInner() {
   const modeLabel = DEBATE_MODES[mode]?.label || mode;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Left: User Panel */}
-      <div className={`flex-1 flex flex-col debate-panel ${isUserTurn ? "debate-panel-active-user" : "debate-panel-user"} m-4 mr-2 transition-all duration-500`}>
-        <div className="p-4 border-b border-[rgba(201,168,76,0.1)] flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-gold animate-pulse-glow" />
-          <span className="text-gold text-[13px] font-semibold">Your Position</span>
-          <Badge variant="gold" size="sm">{side === "for" ? "For" : "Against"}</Badge>
+    <div className="flex h-screen w-full overflow-hidden bg-[#0B0B0D]">
+      {/* Left Area: Chronological Socratic Chat Feed */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Topic Header Banner */}
+        <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.05)] bg-[rgba(13,13,16,0.3)] backdrop-blur-md flex items-center justify-between flex-shrink-0">
+          <div className="min-w-0">
+            <span className="text-[10px] uppercase tracking-widest text-gold font-bold font-mono">Dialectic Topic</span>
+            <h1 className="text-stone text-[14px] font-medium truncate mt-0.5 max-w-xl">
+              {topic}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="stone" size="sm" className="capitalize">
+              {side === "for" ? "Defending Thesis" : "Opposing Thesis"}
+            </Badge>
+          </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.filter(m => m.role === "user").map(msg => (
-            <motion.div key={msg.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <div className="bubble-user text-stone-dim text-[14px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="p-4 border-t border-[rgba(201,168,76,0.08)]">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            placeholder={isUserTurn ? "State your argument…" : "Awaiting AI response…"}
-            disabled={!isUserTurn}
-            className="thought-chamber input-base w-full text-[14px] mb-3"
-            rows={3}
-          />
-          <Button variant="primary" onClick={sendMessage} loading={streaming} disabled={!input.trim()} icon={<Send className="w-4 h-4" />} className="w-full justify-center">
-            Submit Argument
-          </Button>
-        </div>
-      </div>
 
-      {/* Center: HUD */}
-      <div className="w-48 flex flex-col gap-3 py-4 flex-shrink-0">
-        {/* Topic */}
-        <div className="glass rounded-xl p-3 text-center">
-          <div className="text-[10px] text-stone-ghost uppercase tracking-widest mb-1">Topic</div>
-          <div className="text-stone text-[11px] leading-snug font-medium">{topic.slice(0, 60)}{topic.length > 60 ? "…" : ""}</div>
-        </div>
-        {/* Stats */}
-        <div className="glass rounded-xl p-3 space-y-2.5">
-          <div className="flex justify-between">
-            <span className="text-stone-ghost text-[11px]">Round</span>
-            <span className="text-gold font-bold text-[13px]">{round}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-stone-ghost text-[11px]">Time</span>
-            <span className="text-stone text-[12px] font-mono">{formatTime(elapsed)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-stone-ghost text-[11px]">Mode</span>
-            <span className="text-[#6B8DC4] text-[11px] font-medium text-right leading-tight">{modeLabel}</span>
-          </div>
-        </div>
-        {/* Scores */}
-        <AnimatePresence>
-          {showScores && lastScores && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="glass rounded-xl p-3 space-y-2">
-              <div className="text-[10px] text-stone-ghost uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <Brain className="w-3 h-3 text-gold" /> Your Scores
-              </div>
-              <ScoreBar label="Logic" value={lastScores.logic} color="#C9A84C" />
-              <ScoreBar label="Persuasion" value={lastScores.persuasion} color="#6B8DC4" />
-              <ScoreBar label="Clarity" value={lastScores.clarity} color="#6BA880" />
-              <ScoreBar label="Nuance" value={lastScores.nuance} color="#A07840" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {/* Fallacies */}
-        <AnimatePresence>
-          {lastFallacies.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              {lastFallacies.map((f, i) => (
-                <div key={i} className="fallacy-alert mb-2">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <AlertTriangle className="w-3 h-3 text-[#C97070]" />
-                    <span className="text-[11px] font-semibold text-[#C97070]">{f.label}</span>
+        {/* Message Feed */}
+        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-6 scrollbar-thin">
+          <AnimatePresence initial={false}>
+            {messages.map((msg) => {
+              const isAI = msg.role === "assistant";
+              return (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex ${isAI ? "justify-start" : "justify-end"}`}
+                >
+                  <div className={`max-w-[75%] sm:max-w-[70%] space-y-1.5`}>
+                    {/* Role Label */}
+                    <div className={`flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold font-mono ${isAI ? "text-[#6B8DC4] justify-start" : "text-gold justify-end"}`}>
+                      {isAI ? (
+                        <>
+                          <Brain className="w-3 h-3" />
+                          <span>Logos AI ({difficulty})</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>You ({side === "for" ? "Pro" : "Con"})</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Chat Bubble */}
+                    <div className={isAI ? "bubble-ai" : "bubble-user"}>
+                      <p className={`text-[14px] leading-relaxed text-stone-dim whitespace-pre-wrap ${streaming && msg.id === messages[messages.length - 1]?.id && isAI ? "streaming-cursor" : ""}`}>
+                        {msg.content || <span className="text-stone-ghost italic">Tracing argument...</span>}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-stone-muted leading-relaxed">{f.description}</p>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Floating Input Area */}
+        <div className="p-6 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(13,13,16,0.3)] backdrop-blur-md flex-shrink-0">
+          <div className="max-w-3xl mx-auto relative">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder={isUserTurn ? "State your argument..." : "Awaiting response..."}
+              disabled={!isUserTurn}
+              className="thought-chamber input-base w-full pr-14 text-[14px]"
+              rows={2}
+            />
+            <div className="absolute right-3.5 bottom-3.5">
+              <Button
+                variant="primary"
+                onClick={sendMessage}
+                loading={streaming}
+                disabled={!input.trim() || !isUserTurn}
+                icon={<Send className="w-3.5 h-3.5" />}
+                className="rounded-lg p-2.5 min-w-0"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Right: AI Panel */}
-      <div className={`flex-1 flex flex-col debate-panel ${!isUserTurn ? "debate-panel-active-ai" : "debate-panel-ai"} m-4 ml-2 transition-all duration-500`}>
-        <div className="p-4 border-b border-[rgba(74,111,165,0.1)] flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${streaming ? "bg-[#6B8DC4] animate-pulse" : "bg-[rgba(74,111,165,0.4)]"}`} />
-          <span className="text-[#6B8DC4] text-[13px] font-semibold">Logos AI</span>
-          <Badge variant="blue" size="sm">{difficulty}</Badge>
-          {streaming && <span className="text-stone-ghost text-[11px] ml-auto animate-pulse">Formulating…</span>}
+      {/* Right Area: Analytical HUD Sidebar */}
+      <div className="w-80 border-l border-[rgba(255,255,255,0.05)] bg-[#0D0D10] flex flex-col h-full overflow-y-auto p-6 space-y-6 flex-shrink-0">
+        
+        {/* Session Info Header */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-widest text-stone-ghost font-bold">Analytics Panel</span>
+            <div className="flex items-center gap-1.5 text-stone-muted text-xs">
+              <Clock className="w-3.5 h-3.5 text-stone-ghost" />
+              <span className="font-mono">{formatTime(elapsed)}</span>
+            </div>
+          </div>
+          
+          <div className="glass rounded-xl border border-[rgba(255,255,255,0.05)] p-4 space-y-3 bg-[rgba(17,17,20,0.4)]">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-stone-muted">Rigor Mode</span>
+              <span className="text-[#6B8DC4] font-medium">{modeLabel}</span>
+            </div>
+            <div className="h-px bg-[rgba(255,255,255,0.04)]" />
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-stone-muted">Round Count</span>
+              <span className="text-gold font-mono font-bold">{round}</span>
+            </div>
+          </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.filter(m => m.role === "assistant").map((msg, idx) => (
-            <motion.div key={msg.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <div className={`bubble-ai text-stone-dim text-[14px] leading-relaxed whitespace-pre-wrap ${streaming && idx === messages.filter(m => m.role === "assistant").length - 1 ? "streaming-cursor" : ""}`}>
-                {msg.content || <span className="text-stone-ghost italic">Thinking…</span>}
+
+        {/* Real-time Scores Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-gold" />
+            <span className="text-[10px] uppercase tracking-widest text-stone-ghost font-bold">Cognitive Scoring</span>
+          </div>
+
+          <div className="glass rounded-xl border border-[rgba(255,255,255,0.05)] p-4 space-y-4 bg-[rgba(17,17,20,0.4)]">
+            {lastScores ? (
+              <>
+                <ScoreBar label="Logic Rigor" value={lastScores.logic} color="#C9A84C" />
+                <ScoreBar label="Persuasiveness" value={lastScores.persuasion} color="#4A6FA5" />
+                <ScoreBar label="Semantic Clarity" value={lastScores.clarity} color="#4A7C59" />
+                <ScoreBar label="Perspective Nuance" value={lastScores.nuance} color="#A07840" />
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <Brain className="w-8 h-8 text-stone-ghost mx-auto mb-2 opacity-50" />
+                <p className="text-stone-muted text-xs font-light">Submit an argument to initiate cognitive metrics.</p>
               </div>
-            </motion.div>
-          ))}
-          <div ref={bottomRef} />
+            )}
+          </div>
+        </div>
+
+        {/* Fallacies Warning Section */}
+        <div className="space-y-3 flex-1 flex flex-col justify-end">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#C97070]" />
+            <span className="text-[10px] uppercase tracking-widest text-[#C97070] font-bold">Rigor Anomalies</span>
+          </div>
+
+          <div className="flex-1 min-h-[120px] overflow-y-auto space-y-3 pr-1">
+            {lastFallacies.length > 0 ? (
+              lastFallacies.map((f, i) => (
+                <div key={i} className="fallacy-alert space-y-1 animate-fade-in">
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#C97070]" />
+                    <span className="text-[11px] font-semibold text-[#C97070] uppercase font-mono tracking-wider">{f.label}</span>
+                  </div>
+                  <p className="text-[11px] text-stone-muted leading-relaxed font-light">{f.description}</p>
+                </div>
+              ))
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center border border-dashed border-[rgba(255,255,255,0.04)] rounded-xl p-4 text-center">
+                <span className="text-xs text-stone-ghost">No fallacies identified.</span>
+                <p className="text-[10px] text-stone-ghost mt-0.5">Logical structure remains pristine.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -243,7 +302,7 @@ function DebateSessionInner() {
 
 export default function DebateSessionPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center"><span className="text-stone-muted">Loading arena…</span></div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0B0B0D]"><span className="text-stone-muted font-light">Entering Dialectic Arena...</span></div>}>
       <DebateSessionInner />
     </Suspense>
   );
