@@ -45,9 +45,11 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-[rgba(255,255,255,0.05)]">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold to-[#A8882C] flex items-center justify-center shadow-[0_0_20px_rgba(201,168,76,0.25)]">
-          <span className="text-[#0B0B0D] font-serif text-sm font-bold">Λ</span>
-        </div>
+        <img 
+          src="/logo.png" 
+          className="w-8 h-8 object-contain" 
+          alt="Logos Logo" 
+        />
         <span className="font-serif text-base text-stone">Logos</span>
       </div>
 

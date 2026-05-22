@@ -10,9 +10,11 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold to-[#A8882C] flex items-center justify-center">
-                <span className="text-[#0B0B0D] font-serif text-sm font-bold">Λ</span>
-              </div>
+              <img 
+                src="/logo.png" 
+                className="w-8 h-8 object-contain" 
+                alt="Logos Logo" 
+              />
               <span className="font-serif text-lg text-stone">Logos</span>
             </div>
             <p className="text-stone-muted text-sm leading-relaxed max-w-xs">

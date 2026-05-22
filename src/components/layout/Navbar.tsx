@@ -34,9 +34,11 @@ export function Navbar() {
         <div className="content-max flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold to-[#A8882C] flex items-center justify-center shadow-[0_0_20px_rgba(201,168,76,0.3)]">
-              <span className="text-[#0B0B0D] font-serif text-sm font-bold">Λ</span>
-            </div>
+            <img 
+              src="/logo.png" 
+              className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105" 
+              alt="Logos Logo" 
+            />
             <span className="font-serif text-lg text-stone tracking-wide group-hover:text-gold transition-colors duration-200">
               Logos
             </span>
