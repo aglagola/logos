@@ -26,10 +26,10 @@ function DepthLayer({ layer, data, open, onToggle }: {
 }) {
   const isEmpty = !data || (Array.isArray(data) && data.length === 0);
   const colorMap = {
-    stone: { text: "text-stone", border: "border-[rgba(232,228,220,0.08)]", bg: "bg-[rgba(17,17,20,0.4)]", badge: "stone" as const, line: "bg-[rgba(255,255,255,0.08)]" },
-    gold: { text: "text-gold", border: "border-[rgba(201,168,76,0.15)]", bg: "bg-[rgba(201,168,76,0.02)]", badge: "gold" as const, line: "bg-[rgba(201,168,76,0.2)]" },
-    blue: { text: "text-[#6B8DC4]", border: "border-[rgba(74,111,165,0.15)]", bg: "bg-[rgba(74,111,165,0.02)]", badge: "blue" as const, line: "bg-[rgba(74,111,165,0.2)]" },
-    danger: { text: "text-[#C97070]", border: "border-[rgba(139,58,58,0.25)]", bg: "bg-[rgba(139,58,58,0.02)]", badge: "danger" as const, line: "bg-[rgba(139,58,58,0.25)]" },
+    stone: { text: "text-white", border: "border-[rgba(255,255,255,0.08)]", bg: "bg-[rgba(22,22,23,0.4)]", badge: "stone" as const, line: "bg-[rgba(255,255,255,0.08)]" },
+    gold: { text: "text-gold", border: "border-[rgba(229,209,160,0.15)]", bg: "bg-[rgba(229,209,160,0.02)]", badge: "gold" as const, line: "bg-[rgba(229,209,160,0.2)]" },
+    blue: { text: "text-blue", border: "border-[rgba(10,132,255,0.15)]", bg: "bg-[rgba(10,132,255,0.02)]", badge: "blue" as const, line: "bg-[rgba(10,132,255,0.2)]" },
+    danger: { text: "text-danger", border: "border-[rgba(255,69,58,0.25)]", bg: "bg-[rgba(255,69,58,0.02)]", badge: "danger" as const, line: "bg-[rgba(255,69,58,0.25)]" },
   };
   const c = colorMap[layer.color as keyof typeof colorMap];
   const Icon = layer.icon;
@@ -58,7 +58,7 @@ function DepthLayer({ layer, data, open, onToggle }: {
             className="absolute top-0 h-[26px] w-[1px] pointer-events-none"
             style={{ 
               left: `${layer.depth * indentStep - 12}px`, 
-              backgroundColor: layer.color === "gold" ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.05)"
+              backgroundColor: layer.color === "gold" ? "rgba(229, 209, 160, 0.12)" : "rgba(255,255,255,0.05)"
             }}
           />
           
@@ -67,7 +67,7 @@ function DepthLayer({ layer, data, open, onToggle }: {
             className="absolute top-[26px] h-[1px] w-[12px] pointer-events-none"
             style={{ 
               left: `${layer.depth * indentStep - 12}px`,
-              backgroundColor: layer.color === "gold" ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.05)"
+              backgroundColor: layer.color === "gold" ? "rgba(229, 209, 160, 0.12)" : "rgba(255,255,255,0.05)"
             }}
           />
         </>
@@ -125,7 +125,7 @@ function DepthLayer({ layer, data, open, onToggle }: {
                   
                   {(layer.key === "axioms" || layer.key === "counter_axioms") && Array.isArray(data) && data.map((a: { id: string; text: string; category: string; strength: string }, i: number) => (
                     <div key={i} className="flex items-start gap-2.5">
-                      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${layer.key === "axioms" ? "bg-gold" : "bg-[#6B8DC4]"}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${layer.key === "axioms" ? "bg-gold" : "bg-blue"}`} />
                       <div>
                         <span className="text-stone-dim text-[13px] font-light">{a.text}</span>
                         <div className="flex items-center gap-2 mt-1.5">
@@ -138,7 +138,7 @@ function DepthLayer({ layer, data, open, onToggle }: {
                   
                   {layer.key === "contradictions" && Array.isArray(data) && data.map((c: { axiom_a: string; axiom_b: string; description: string; severity: string }, i: number) => (
                     <div key={i} className="fallacy-alert space-y-1.5">
-                      <div className="text-[12px] font-semibold text-[#C97070]">{c.description}</div>
+                      <div className="text-[12px] font-semibold text-danger">{c.description}</div>
                       <div className="text-[11px] text-stone-muted font-light">
                         <span className="line-through opacity-40">{c.axiom_a}</span> contradicts <span className="line-through opacity-40">{c.axiom_b}</span>
                       </div>

@@ -132,14 +132,14 @@ function DebateSessionInner() {
   const modeLabel = DEBATE_MODES[mode]?.label || mode;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0B0B0D]">
+    <div className="flex h-screen w-full overflow-hidden bg-background">
       {/* Left Area: Chronological Socratic Chat Feed */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Topic Header Banner */}
-        <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.05)] bg-[rgba(13,13,16,0.3)] backdrop-blur-md flex items-center justify-between flex-shrink-0">
+        <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.06)] bg-[rgba(22,22,23,0.3)] backdrop-blur-md flex items-center justify-between flex-shrink-0">
           <div className="min-w-0">
             <span className="text-[10px] uppercase tracking-widest text-gold font-bold font-mono">Dialectic Topic</span>
-            <h1 className="text-stone text-[14px] font-medium truncate mt-0.5 max-w-xl">
+            <h1 className="text-white text-[14px] font-medium truncate mt-0.5 max-w-xl">
               {topic}
             </h1>
           </div>
@@ -165,7 +165,7 @@ function DebateSessionInner() {
                 >
                   <div className={`max-w-[75%] sm:max-w-[70%] space-y-1.5`}>
                     {/* Role Label */}
-                    <div className={`flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold font-mono ${isAI ? "text-[#6B8DC4] justify-start" : "text-gold justify-end"}`}>
+                    <div className={`flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold font-mono ${isAI ? "text-blue justify-start" : "text-gold justify-end"}`}>
                       {isAI ? (
                         <>
                           <Brain className="w-3 h-3" />
@@ -180,7 +180,7 @@ function DebateSessionInner() {
 
                     {/* Chat Bubble */}
                     <div className={isAI ? "bubble-ai" : "bubble-user"}>
-                      <p className={`text-[14px] leading-relaxed text-stone-dim whitespace-pre-wrap ${streaming && msg.id === messages[messages.length - 1]?.id && isAI ? "streaming-cursor" : ""}`}>
+                      <p className={`text-[14px] leading-relaxed text-white whitespace-pre-wrap ${streaming && msg.id === messages[messages.length - 1]?.id && isAI ? "streaming-cursor" : ""}`}>
                         {msg.content || <span className="text-stone-ghost italic">Tracing argument...</span>}
                       </p>
                     </div>
@@ -193,7 +193,7 @@ function DebateSessionInner() {
         </div>
 
         {/* Floating Input Area */}
-        <div className="p-6 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(13,13,16,0.3)] backdrop-blur-md flex-shrink-0">
+        <div className="p-6 border-t border-[rgba(255,255,255,0.06)] bg-[rgba(22,22,23,0.3)] backdrop-blur-md flex-shrink-0">
           <div className="max-w-3xl mx-auto relative">
             <textarea
               ref={inputRef}
@@ -220,7 +220,7 @@ function DebateSessionInner() {
       </div>
 
       {/* Right Area: Analytical HUD Sidebar */}
-      <div className="w-80 border-l border-[rgba(255,255,255,0.05)] bg-[#0D0D10] flex flex-col h-full overflow-y-auto p-6 space-y-6 flex-shrink-0">
+      <div className="w-80 border-l border-[rgba(255,255,255,0.06)] bg-[#161617] flex flex-col h-full overflow-y-auto p-6 space-y-6 flex-shrink-0">
         
         {/* Session Info Header */}
         <div className="space-y-4">
@@ -232,10 +232,10 @@ function DebateSessionInner() {
             </div>
           </div>
           
-          <div className="glass rounded-xl border border-[rgba(255,255,255,0.05)] p-4 space-y-3 bg-[rgba(17,17,20,0.4)]">
+          <div className="glass rounded-xl border border-[rgba(255,255,255,0.06)] p-4 space-y-3 bg-[rgba(22,22,23,0.4)]">
             <div className="flex items-center justify-between text-xs">
               <span className="text-stone-muted">Rigor Mode</span>
-              <span className="text-[#6B8DC4] font-medium">{modeLabel}</span>
+              <span className="text-blue font-medium">{modeLabel}</span>
             </div>
             <div className="h-px bg-[rgba(255,255,255,0.04)]" />
             <div className="flex items-center justify-between text-xs">
@@ -252,13 +252,13 @@ function DebateSessionInner() {
             <span className="text-[10px] uppercase tracking-widest text-stone-ghost font-bold">Cognitive Scoring</span>
           </div>
 
-          <div className="glass rounded-xl border border-[rgba(255,255,255,0.05)] p-4 space-y-4 bg-[rgba(17,17,20,0.4)]">
+          <div className="glass rounded-xl border border-[rgba(255,255,255,0.06)] p-4 space-y-4 bg-[rgba(22,22,23,0.4)]">
             {lastScores ? (
               <>
-                <ScoreBar label="Logic Rigor" value={lastScores.logic} color="#C9A84C" />
-                <ScoreBar label="Persuasiveness" value={lastScores.persuasion} color="#4A6FA5" />
-                <ScoreBar label="Semantic Clarity" value={lastScores.clarity} color="#4A7C59" />
-                <ScoreBar label="Perspective Nuance" value={lastScores.nuance} color="#A07840" />
+                <ScoreBar label="Logic Rigor" value={lastScores.logic} color="#30D158" />
+                <ScoreBar label="Persuasiveness" value={lastScores.persuasion} color="#0A84FF" />
+                <ScoreBar label="Semantic Clarity" value={lastScores.clarity} color="#30D158" />
+                <ScoreBar label="Perspective Nuance" value={lastScores.nuance} color="#FF9F0A" />
               </>
             ) : (
               <div className="text-center py-6">
@@ -272,8 +272,8 @@ function DebateSessionInner() {
         {/* Fallacies Warning Section */}
         <div className="space-y-3 flex-1 flex flex-col justify-end">
           <div className="flex items-center gap-2">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#C97070]" />
-            <span className="text-[10px] uppercase tracking-widest text-[#C97070] font-bold">Rigor Anomalies</span>
+            <ShieldAlert className="w-3.5 h-3.5 text-danger" />
+            <span className="text-[10px] uppercase tracking-widest text-danger font-bold">Rigor Anomalies</span>
           </div>
 
           <div className="flex-1 min-h-[120px] overflow-y-auto space-y-3 pr-1">
@@ -281,8 +281,8 @@ function DebateSessionInner() {
               lastFallacies.map((f, i) => (
                 <div key={i} className="fallacy-alert space-y-1 animate-fade-in">
                   <div className="flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-[#C97070]" />
-                    <span className="text-[11px] font-semibold text-[#C97070] uppercase font-mono tracking-wider">{f.label}</span>
+                    <AlertTriangle className="w-3.5 h-3.5 text-danger" />
+                    <span className="text-[11px] font-semibold text-danger uppercase font-mono tracking-wider">{f.label}</span>
                   </div>
                   <p className="text-[11px] text-stone-muted leading-relaxed font-light">{f.description}</p>
                 </div>
@@ -302,7 +302,7 @@ function DebateSessionInner() {
 
 export default function DebateSessionPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#0B0B0D]"><span className="text-stone-muted font-light">Entering Dialectic Arena...</span></div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-background"><span className="text-stone-muted font-light">Entering Dialectic Arena...</span></div>}>
       <DebateSessionInner />
     </Suspense>
   );

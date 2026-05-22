@@ -18,8 +18,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: "btn-primary",
       ghost: "btn-ghost",
       "outline-gold": "btn-outline-gold",
-      outline: "bg-transparent text-stone-dim border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.04)] hover:text-stone transition-all duration-200 rounded-[10px]",
-      danger: "bg-transparent text-[#C97070] border border-[rgba(139,58,58,0.25)] hover:bg-[rgba(139,58,58,0.08)] transition-all duration-200 rounded-[10px]",
+      outline: "bg-transparent text-white border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.15)] transition-all duration-200 rounded-full",
+      danger: "bg-transparent text-[#FF453A] border border-[rgba(255,69,58,0.25)] hover:bg-[rgba(255,69,58,0.08)] transition-all duration-200 rounded-full",
     };
     const sizes = {
       sm: "text-[12px] px-3 py-2 gap-1.5",
